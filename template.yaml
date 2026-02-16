@@ -26,6 +26,13 @@ Globals:
         ENDPOINT_OVERRIDE: ""
     
 Resources:
+  MyApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: TodoApi
+      StageName: !Ref Stage
+      Auth:
+        ApiKeyRequired: true
   
   CreateTodoFunction:
     Type: AWS::Serverless::Function 
@@ -40,7 +47,7 @@ Resources:
           Properties:
             Path: /todos
             Method: post
-            ApiKeyRequired: true
+            RestApiId: !Ref MyApi
   ListTodosFunction:
     Type: AWS::Serverless::Function 
     Properties:
@@ -54,6 +61,7 @@ Resources:
           Properties:
             Path: /todos
             Method: get
+            RestApiId: !Ref MyApi
               
   GetTodoFunction:
     Type: AWS::Serverless::Function 
@@ -68,7 +76,7 @@ Resources:
           Properties:
             Path: /todos/{id}
             Method: get
-            ApiKeyRequired: true
+            RestApiId: !Ref MyApi
   UpdateTodoFunction:
     Type: AWS::Serverless::Function 
     Properties:
@@ -82,7 +90,7 @@ Resources:
           Properties:
             Path: /todos/{id}
             Method: put
-            ApiKeyRequired: true
+            RestApiId: !Ref MyApi
   DeleteTodoFunction:
     Type: AWS::Serverless::Function 
     Properties:
@@ -96,7 +104,7 @@ Resources:
           Properties:
             Path: /todos/{id}
             Method: delete
-            ApiKeyRequired: true
+            RestApiId: !Ref MyApi
   TodosDynamoDbTable:
     Type: AWS::DynamoDB::Table
     Properties: 
