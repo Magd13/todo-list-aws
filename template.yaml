@@ -40,6 +40,8 @@ Resources:
           Properties:
             Path: /todos
             Method: post
+            RestApiId: !Ref ServerlessRestApi 
+            ApiKeyRequired: true
   ListTodosFunction:
     Type: AWS::Serverless::Function 
     Properties:
@@ -53,6 +55,7 @@ Resources:
           Properties:
             Path: /todos
             Method: get
+              
   GetTodoFunction:
     Type: AWS::Serverless::Function 
     Properties:
@@ -66,6 +69,7 @@ Resources:
           Properties:
             Path: /todos/{id}
             Method: get
+            ApiKeyRequired: true
   UpdateTodoFunction:
     Type: AWS::Serverless::Function 
     Properties:
@@ -79,6 +83,7 @@ Resources:
           Properties:
             Path: /todos/{id}
             Method: put
+            ApiKeyRequired: true
   DeleteTodoFunction:
     Type: AWS::Serverless::Function 
     Properties:
@@ -92,7 +97,7 @@ Resources:
           Properties:
             Path: /todos/{id}
             Method: delete
-            
+            ApiKeyRequired: true
   TodosDynamoDbTable:
     Type: AWS::DynamoDB::Table
     Properties: 
