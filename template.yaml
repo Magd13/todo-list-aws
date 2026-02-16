@@ -40,7 +40,6 @@ Resources:
           Properties:
             Path: /todos
             Method: post
-            RestApiId: !Ref ServerlessRestApi 
             ApiKeyRequired: true
   ListTodosFunction:
     Type: AWS::Serverless::Function 
