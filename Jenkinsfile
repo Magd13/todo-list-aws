@@ -6,13 +6,6 @@ pipeline {
         STAGE = "staging"
     }
     stages {
-        stage('=====>GETCODE<======') {
-            steps {
-                echo 'Clonando repositorio'
-                git branch: 'develop',
-                url: 'https://github.com/Magd13/todo-list-aws.git'
-            }
-        }
         stage('=====> CREATE VENV & INSTALL TOOLS <=====') {
             steps {
                 echo "🐍 Creando entorno virtual e instalando dependencias..."
