@@ -6,6 +6,17 @@ pipeline {
         STAGE = "staging"
     }
     stages {
+        stage('====>Download configuration<====') {
+            steps {
+                echo "📥 Descargando configuración de entorno..."
+                 sh '''
+                    curl -o samconfig.toml \
+                    https://raw.githubusercontent.com/Magd13/todo-list-aws-config/staging/samconfig.toml
+                '''
+                echo "✅ Config descargada:"
+                sh "cat samconfig.toml"
+            }
+        }
         stage('=====> CREATE VENV & INSTALL TOOLS <=====') {
             steps {
                 echo "🐍 Creando entorno virtual e instalando dependencias..."
@@ -55,19 +66,8 @@ pipeline {
                         echo "✅ SAM VALIDATE..."
                         sam validate --region ${AWS_REGION}
         
-                        rm -f samconfig.toml
-                        
-                        echo "${STACK_NAME}"
-                        
                         echo "🚀 SAM DEPLOY (NO INTERACTIVE)..."
-                        sam deploy \
-                            --stack-name ${STACK_NAME} \
-                            --region ${AWS_REGION} \
-                            --capabilities CAPABILITY_IAM \
-                            --no-confirm-changeset \
-                            --no-fail-on-empty-changeset \
-                            --s3-bucket todo-sam-artifacts-196164087862 \
-                            --parameter-overrides Stage=staging
+                        sam deploy
                     '''
                     // Capturar API Key en variable de entorno
                     def apiKeyId = sh(
