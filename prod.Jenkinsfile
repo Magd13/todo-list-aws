@@ -2,11 +2,19 @@ pipeline {
   agent any
   environment {
     AWS_REGION = "us-east-1"
-    STACK_NAME = "todo-api-production"
-    STAGE = "production"
   }
 
   stages {
+    stage('====>Download configuration<====') {
+      steps {
+        echo "📥 Descargando samconfig.toml..."
+        sh '''
+          curl -o samconfig.toml \
+          https://raw.githubusercontent.com/Magd13/todo-list-aws-config/production/samconfig.toml
+        '''
+        sh "cat samconfig.toml"
+      }
+    }
     stage('=====> CREATE VENV & INSTALL TOOLS <=====') {
       steps {
         echo "🐍 Creando entorno virtual e instalando dependencias..."
@@ -30,17 +38,9 @@ pipeline {
 
             echo "✅ SAM VALIDATE..."
             sam validate --region ${AWS_REGION}
-            rm -f samconfig.toml
 
             echo "🚀 SAM DEPLOY (NO INTERACTIVE)..."
-            sam deploy \
-              --stack-name ${STACK_NAME} \
-              --region ${AWS_REGION} \
-              --capabilities CAPABILITY_IAM \
-              --no-confirm-changeset \
-              --no-fail-on-empty-changeset \
-              --s3-bucket todo-sam-artifacts-196164087862 \
-              --parameter-overrides Stage=production
+            sam deploy
           '''
           // Capturar API KEY ID desde
           def apiKeyId = sh(
