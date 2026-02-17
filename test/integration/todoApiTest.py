@@ -25,11 +25,12 @@ class TestApi(unittest.TestCase):
         print('---------------------------------------')
         print('Starting - integration test List TODO')
         #Add TODO
-        print('uRL bASE: ' + BASE_URL)
         url = BASE_URL+"/todos"
         data = {
          "text": "Integration text example"
         }
+        print('URL BASE: ' + url)
+        print('Headers: ' + str(headers))
         response = requests.post(url, headers=headers, data=json.dumps(data))
         json_response = response.json()
         print('Response Add Todo: '+ str(json_response))
@@ -44,6 +45,8 @@ class TestApi(unittest.TestCase):
         )
         #List
         url = BASE_URL+"/todos"
+        print('URL BASE: ' + url)
+        print('Headers: ' + str(headers))
         response = requests.get(url, headers=headers)
         print('Response List Todo:' + str(response.json()))
         self.assertEqual(
@@ -59,6 +62,8 @@ class TestApi(unittest.TestCase):
         data = {
          "text": "Integration text example"
         }
+        print('URL BASE: ' + url)
+        print('Headers: ' + str(headers))
         response = requests.post(url, headers=headers, data=json.dumps(data))
         json_response = response.json()
         print('Response Add Todo: '+ json_response['body'])
@@ -72,6 +77,8 @@ class TestApi(unittest.TestCase):
             jsonbody['text'], "Integration text example", "Error en la petición API a {url}"
         )
         url = url+"/"+ID_TODO
+        print('URL BASE: ' + url)
+        print('Headers: ' + str(headers))
         response = requests.delete(url, headers=headers)
         self.assertEqual(
             response.status_code, 200, "Error en la petición API a {url}"
@@ -85,6 +92,8 @@ class TestApi(unittest.TestCase):
         data = {
          "text": "Integration text example - GET"
         }
+        print('URL BASE: ' + url)
+        print('Headers: ' + str(headers))
         response = requests.post(url, headers=headers, data=json.dumps(data))
         json_response = response.json()
         print('Response Add Todo: '+ str(json_response))
@@ -109,6 +118,8 @@ class TestApi(unittest.TestCase):
             json_response['text'], "Integration text example - GET", "Error en la petición API a {url}"
         )
         #Delete TODO to restore state
+        print('URL BASE: ' + url)
+        print('Headers: ' + str(headers))
         response = requests.delete(url, headers=headers)
         self.assertEqual(
             response.status_code, 200, "Error en la petición API a {url}"
@@ -123,6 +134,8 @@ class TestApi(unittest.TestCase):
         data = {
          "text": "Integration text example - Initial"
         }
+        print('URL BASE: ' + url)
+        print('Headers: ' + str(headers))
         response = requests.post(url, headers=headers, data=json.dumps(data))
         json_response = response.json()
         print('Response Add todo: ' + json_response['body'])
@@ -141,6 +154,8 @@ class TestApi(unittest.TestCase):
          "text": "Integration text example - Modified",
          "checked": "true"
         }
+        print('URL BASE: ' + url)
+        print('Headers: ' + str(headers))
         response = requests.put(url, headers=headers, data=json.dumps(data))
         json_response = response.json()
         print('Response Update todo: ' + str(json_response))
@@ -153,6 +168,8 @@ class TestApi(unittest.TestCase):
         )
         #Test GET TODO
         url = BASE_URL+"/todos/"+ID_TODO
+        print('URL BASE: ' + url)
+        print('Headers: ' + str(headers))
         response = requests.get(url, headers=headers)
         json_response = response.json()
         print('Response Get Todo: '+ str(json_response))
@@ -162,6 +179,8 @@ class TestApi(unittest.TestCase):
         self.assertEqual(
             json_response['text'], "Integration text example - Modified", "Error en la petición API a {url}"
         )
+        print('URL BASE: ' + url)
+        print('Headers: ' + str(headers))
         #Delete TODO to restore state
         response = requests.delete(url, headers=headers)
         self.assertEqual(
@@ -176,6 +195,8 @@ class TestApi(unittest.TestCase):
         data = {
          "text": "Integration text example - Initial"
         }
+        print('URL BASE: ' + url)
+        print('Headers: ' + str(headers))
         response = requests.post(url, headers=headers, data=json.dumps(data))
         json_response = response.json()
         print('Response Add todo: ' + json_response['body'])
@@ -188,6 +209,8 @@ class TestApi(unittest.TestCase):
         self.assertEqual(
             jsonbody['text'], "Integration text example - Initial", "Error en la petición API a {url}"
         )
+        print('URL BASE: ' + url)
+        print('Headers: ' + str(headers))
         #Delete TODO to restore state
         response = requests.delete(url + '/' + ID_TODO, headers=headers)
         self.assertEqual(
@@ -196,6 +219,8 @@ class TestApi(unittest.TestCase):
         print ('Response Delete Todo:' + str(response))
         #Test GET TODO
         url = BASE_URL+"/todos/"+ID_TODO
+        print('URL BASE: ' + url)
+        print('Headers: ' + str(headers))
         response = requests.get(url, headers=headers)
         print('Response Get Todo '+ url+': '+ str(response))
         self.assertEqual(
