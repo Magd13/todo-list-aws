@@ -137,14 +137,15 @@ pipeline {
         stage('==========>PROMOTE (MERGE MASTER)<===========') {
             steps {
                 echo "🚀 Promoviendo versión a Release..."
-        
-                sh '''
-                  git fetch origin
-                  git checkout master
-                  git pull origin master
-                  git merge origin/develop
-                  git push https://$GIT_USER:$GIT_PASS@github.com/Magd13/todo-list-aws.git master
-                '''
+                withCredentials([usernamePassword(credentialsId: 'case1.4', usernameVariable: 'GITHUB_USER', passwordVariable: 'GITHUB_TOKEN')]) {
+                  sh '''
+                    git fetch origin
+                    git checkout master
+                    git pull origin master
+                    git merge origin/develop
+                    git push https://${GITHUB_USER}:${GITHUB_TOKEN}@github.com/Magd13/todo-list-aws.git master
+                  '''
+                }
             }
         }
     }
