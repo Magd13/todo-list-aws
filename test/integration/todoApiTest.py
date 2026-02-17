@@ -10,11 +10,8 @@ import pytest
 BASE_URL = os.environ.get("BASE_URL")
 #BASE_URL = "https://m0qwfec693.execute-api.us-east-1.amazonaws.com/Prod"
 DEFAULT_TIMEOUT = 2  # in secs
-API_KEY = "jqI6CKXWFk8Q7SvYk9Iev5QJ3ujlQt5i2liRQo7k"
-headers = {
-    "Content-Type": "application/json",
-    "x-api-key": "jqI6CKXWFk8Q7SvYk9Iev5QJ3ujlQt5i2liRQo7k"  # tu API Key real
-}
+API_KEY = os.environ.get("API_KEY")
+headers = {"x-api-key": API_KEY, "Content-Type": "application/json"}
 
 
 @pytest.mark.api
