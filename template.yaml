@@ -29,7 +29,7 @@ Resources:
   MyApi:
     Type: AWS::Serverless::Api
     Properties:
-      Name: staging
+      Name: !Sub "todo-api-${Stage}"
       StageName: !Ref Stage
       Auth:
         ApiKeyRequired: true
