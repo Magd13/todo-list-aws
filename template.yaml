@@ -162,6 +162,9 @@ Outputs:
   BaseUrlApi:
     Description: "Base URL of API"
     Value: !Sub "https://${MyApi}.execute-api.${AWS::Region}.amazonaws.com/${Stage}"
+  TodoApiKey:
+    Description: "API Key for accessing the TODO API"
+    Value: !Ref TodoApiKey
   CreateTodoApi:
     Description: "API Gateway endpoint URL for ${opt:stage} stage for Create TODO"
     Value: !Sub "https://${MyApi}.execute-api.${AWS::Region}.amazonaws.com/${Stage}/todos/"
