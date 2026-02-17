@@ -79,9 +79,9 @@ pipeline {
                     // Capturar API Key en variable de entorno
                     def apiKeyOutput = sh(
                         script: '''
-                            aws cloudformation describe-stacks \
+                            aws cloudformation describe-stack-resources \
                                 --stack-name ${STACK_NAME} \
-                                --query "Stacks[0].Outputs[?OutputKey=='TodoApiKey'].OutputValue" \
+                                --query "StackResources[?ResourceType=='AWS::ApiGateway::ApiKey'].PhysicalResourceId" \
                                 --output text
                         ''',
                         returnStdout: true
@@ -89,7 +89,7 @@ pipeline {
                     def apiKeyValue = sh(
                         script: """
                             aws apigateway get-api-key \
-                                --api-key ${apiKeyOutput} \
+                                --api-key $API_KEY_ID \
                                 --include-value \
                                 --query 'value' \
                                 --output text \
