@@ -6,6 +6,17 @@ pipeline {
         STAGE = "staging"
     }
     stages {
+        stage('====>Download configuration<====') {
+            steps {
+                echo "📥 Descargando configuración de entorno..."
+                 sh '''
+                    curl -o samconfig.toml \
+                    https://raw.githubusercontent.com/Magd13/todo-list-aws-config/staging/samconfig.toml
+                '''
+                echo "✅ Config descargada:"
+                sh "cat samconfig.toml"
+            }
+        }
         stage('=====> CREATE VENV & INSTALL TOOLS <=====') {
             steps {
                 echo "🐍 Creando entorno virtual e instalando dependencias..."
