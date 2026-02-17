@@ -123,4 +123,4 @@ aws cloudformation delete-stack --stack-name todo-list-aws-staging
 aws cloudformation delete-stack --stack-name todo-list-aws-production
 ```
 
-Cambio para prueba de despliegue automático en prod.
+Cambio para prueba de despliegue automático.
