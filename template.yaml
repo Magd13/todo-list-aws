@@ -29,10 +29,36 @@ Resources:
   MyApi:
     Type: AWS::Serverless::Api
     Properties:
-      Name: TodoApi
+      Name: staging
       StageName: !Ref Stage
       Auth:
         ApiKeyRequired: true
+  TodoApiKey:
+    Type: AWS::ApiGateway::ApiKey
+    Properties:
+      Name: !Sub "TodoApiKey-${Stage}"
+      Enabled: true
+  
+  TodoUsagePlan:
+    Type: AWS::ApiGateway::UsagePlan
+    Properties:
+      UsagePlanName: !Sub "TodoUsagePlan-${Stage}"
+      ApiStages:
+        - ApiId: !Ref MyApi
+          Stage: !Ref Stage
+      Throttle:
+        RateLimit: 10
+        BurstLimit: 2
+      Quota:
+        Limit: 1000
+        Period: MONTH
+    
+  TodoUsagePlanKey:
+    Type: AWS::ApiGateway::UsagePlanKey
+    Properties:
+      KeyId: !Ref TodoApiKey
+      KeyType: API_KEY
+      UsagePlanId: !Ref TodoUsagePlan
   
   CreateTodoFunction:
     Type: AWS::Serverless::Function 
@@ -48,6 +74,8 @@ Resources:
             Path: /todos
             Method: post
             RestApiId: !Ref MyApi
+            Auth:
+              ApiKeyRequired: true
   ListTodosFunction:
     Type: AWS::Serverless::Function 
     Properties:
@@ -62,7 +90,8 @@ Resources:
             Path: /todos
             Method: get
             RestApiId: !Ref MyApi
-              
+            Auth:
+              ApiKeyRequired: true
   GetTodoFunction:
     Type: AWS::Serverless::Function 
     Properties:
@@ -77,6 +106,8 @@ Resources:
             Path: /todos/{id}
             Method: get
             RestApiId: !Ref MyApi
+            Auth:
+              ApiKeyRequired: true
   UpdateTodoFunction:
     Type: AWS::Serverless::Function 
     Properties:
@@ -91,6 +122,8 @@ Resources:
             Path: /todos/{id}
             Method: put
             RestApiId: !Ref MyApi
+            Auth:
+              ApiKeyRequired: true
   DeleteTodoFunction:
     Type: AWS::Serverless::Function 
     Properties:
@@ -105,6 +138,8 @@ Resources:
             Path: /todos/{id}
             Method: delete
             RestApiId: !Ref MyApi
+            Auth:
+              ApiKeyRequired: true
   TodosDynamoDbTable:
     Type: AWS::DynamoDB::Table
     Properties: 
