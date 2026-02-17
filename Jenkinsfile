@@ -77,19 +77,22 @@ pipeline {
                             --parameter-overrides Stage=staging
                     '''
                     // Capturar API Key en variable de entorno
-                    def apiKeyOutput = sh(
+                    def apiKeyId = sh(
                         script: '''
-                            aws cloudformation describe-stacks \
+                            aws cloudformation describe-stack-resources \
                                 --stack-name ${STACK_NAME} \
-                                --query "Stacks[0].Outputs[?OutputKey=='TodoApiKey'].OutputValue" \
+                                --query "StackResources[?ResourceType=='AWS::ApiGateway::ApiKey'].PhysicalResourceId" \
                                 --output text
                         ''',
                         returnStdout: true
                     ).trim()
+                    
+                    echo "📌 API KEY ID detectada: ${apiKeyId}"
+                    
                     def apiKeyValue = sh(
                         script: """
                             aws apigateway get-api-key \
-                                --api-key ${apiKeyOutput} \
+                                --api-key ${apiKeyId} \
                                 --include-value \
                                 --query 'value' \
                                 --output text \
