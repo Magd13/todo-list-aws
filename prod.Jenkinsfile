@@ -2,6 +2,7 @@ pipeline {
   agent any
   environment {
     AWS_REGION = "us-east-1"
+    STACK_NAME = "todo-api-production"
   }
 
   stages {
