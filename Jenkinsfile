@@ -2,8 +2,6 @@ pipeline {
     agent any
     environment {
         AWS_REGION = "us-east-1"
-        STACK_NAME = "todo-api-staging"
-        STAGE = "staging"
     }
     stages {
         stage('====>Download configuration<====') {
@@ -66,19 +64,8 @@ pipeline {
                         echo "✅ SAM VALIDATE..."
                         sam validate --region ${AWS_REGION}
         
-                        rm -f samconfig.toml
-                        
-                        echo "${STACK_NAME}"
-                        
                         echo "🚀 SAM DEPLOY (NO INTERACTIVE)..."
-                        sam deploy \
-                            --stack-name ${STACK_NAME} \
-                            --region ${AWS_REGION} \
-                            --capabilities CAPABILITY_IAM \
-                            --no-confirm-changeset \
-                            --no-fail-on-empty-changeset \
-                            --s3-bucket todo-sam-artifacts-196164087862 \
-                            --parameter-overrides Stage=staging
+                        sam deploy
                     '''
                     // Capturar API Key en variable de entorno
                     def apiKeyId = sh(
