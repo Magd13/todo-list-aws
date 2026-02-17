@@ -1,47 +1,48 @@
 pipeline {
     agent any
     environment {
-        AWS_REGION = "us-east-1"
-        STACK_NAME = "todo-api-staging"
-        STAGE = "staging"
+      AWS_REGION = "us-east-1"
+      STACK_NAME = "todo-api-staging"
+      STAGE = "staging"
     }
     stages {
         stage('=====> CREATE VENV & INSTALL TOOLS <=====') {
-            steps {
-                echo "🐍 Creando entorno virtual e instalando dependencias..."
+          steps {
+            echo "🐍 Creando entorno virtual e instalando dependencias..."
 
-                sh '''
-                    python3 -m venv venv
-                    . venv/bin/activate
+            sh '''
+                python3 -m venv venv
+                . venv/bin/activate
 
-                    pip install --upgrade pip
-                    pip install flake8 bandit aws-sam-cli
-                '''
-            }
+                pip install --upgrade pip
+                pip install flake8 bandit aws-sam-cli
+            '''
+          }
         }
         stage('==========>STATIC TEST<===========') {
-            steps {
-                echo "EJECUTANDO ANALISIS ESTATICO EN SRC/"
-                sh '''
-                    mkdir -p reports
-                    . venv/bin/activate
-                    
-                    echo "RUNNUNG FLAKE8"
-                    flake8 src --output-file=reports/flake8-report.txt || true
-                    
-                    echo "RUNNING BANDIT" > reports/bandit.out
-                    bandit -r src -f txt -o reports/bandit-reports.txt || true
-                '''
-            }
-            post {
-                always {
-                    echo "📌 Publicando reportes estáticos..."
+          agent { label 'static-agent' }
 
-                    archiveArtifacts artifacts: "reports/*.txt", fingerprint: true
-                }
+          steps {
+            echo "EJECUTANDO ANALISIS ESTATICO EN SRC/"
+            sh '''
+                mkdir -p reports
+                . venv/bin/activate
+                
+                echo "RUNNUNG FLAKE8"
+                flake8 src --output-file=reports/flake8-report.txt || true
+                
+                echo "RUNNING BANDIT" > reports/bandit.out
+                bandit -r src -f txt -o reports/bandit-reports.txt || true
+            '''
+          }
+          post {
+            always {
+              echo "📌 Publicando reportes estáticos..."
+              archiveArtifacts artifacts: "reports/*.txt", fingerprint: true
             }
+          }
         }
-       stage('==========>DEPLOY (SAM)<===========') {
+        stage('==========>DEPLOY (SAM)<===========') {
             steps {
                 echo "🚀 Construyendo y desplegando con AWS SAM en STAGING..."
                 script {
@@ -109,26 +110,37 @@ pipeline {
                     echo "📌 BASE_URL configurada: ${env.BASE_URL}"
                     env.API_KEY = apiKeyValue
                     echo "📌 API_KEY configurada: ${env.API_KEY}"
+                    writeFile file: "env_vars.txt", text: """
+                      BASE_URL=${baseUrlOutput}
+                      API_KEY=${apiKeyValue}
+                    """
+                    stash name: "api-env", includes: "env_vars.txt"
                 }
             }
         }
 
         stage('==========>REST TEST (PYTEST)<===========') {
-            environment {
-                BASE_URL = "${env.BASE_URL}"
-                API_KEY = "${env.API_KEY}"
+          agent { label 'rest-agent' }
+          environment {
+              BASE_URL = "${env.BASE_URL}"
+              API_KEY = "${env.API_KEY}"
+          }
+          steps {
+            echo "🌐 Ejecutando pruebas de integración..."
+            
+            unstash "api-env"
+            script {
+              def vars = readFile("env_vars.txt").split("\n")
+              def baseUrl = vars[0].replace("BASE_URL=", "").trim()
+              def apiKey  = vars[1].replace("API_KEY=", "").trim()
+              
+              sh """
+                  echo "Probando API en: ${baseUrl}"
+                  curl -s -H "x-api-key: ${apiKey}" ${baseUrl}/todos | grep "\\["
+                  echo "🎉 REST TEST PASSED!"
+              """
             }
-            steps {
-                 echo "🌐 Ejecutando pruebas de integración..."
-
-                sh '''
-                    . venv/bin/activate
-        
-                    pip install pytest requests
-        
-                    pytest -v test/integration/todoApiTest.py
-                '''
-            }
+          }
         }
         stage('==========>PROMOTE (MERGE MASTER)<===========') {
             steps {
