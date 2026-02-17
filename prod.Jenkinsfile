@@ -43,20 +43,22 @@ pipeline {
               --parameter-overrides Stage=production
           '''
           // Capturar API KEY ID desde
-          def apiKeyOutput = sh(
+          def apiKeyId = sh(
             script: '''
-              aws cloudformation describe-stacks \
-                  --stack-name ${STACK_NAME} \
-                  --query "Stacks[0].Outputs[?OutputKey=='TodoApiKey'].OutputValue" \
-                  --output text
+              aws cloudformation describe-stack-resources \
+                --stack-name ${STACK_NAME} \
+                --query "StackResources[?ResourceType=='AWS::ApiGateway::ApiKey'].PhysicalResourceId" \
+                --output text
             ''',
             returnStdout: true
           ).trim()
-          // Obtener el valor real de la API KEY
+            
+          echo "📌 API KEY ID detectada: ${apiKeyId}"
+            
           def apiKeyValue = sh(
             script: """
               aws apigateway get-api-key \
-                --api-key ${apiKeyOutput} \
+                --api-key ${apiKeyId} \
                 --include-value \
                 --query 'value' \
                 --output text \
@@ -64,7 +66,8 @@ pipeline {
             """,
             returnStdout: true
           ).trim()
-          // Capturar BASE URL
+        
+          // Capturar BASE_URL en variable de entorno
           def baseUrlOutput = sh(
             script: '''
               aws cloudformation describe-stacks \
@@ -74,10 +77,11 @@ pipeline {
             ''',
             returnStdout: true
           ).trim()
+        
           env.BASE_URL = baseUrlOutput
+          echo "📌 BASE_URL configurada: ${env.BASE_URL}"
           env.API_KEY = apiKeyValue
-          echo "📌 BASE_URL producción: ${env.BASE_URL}"
-          echo "📌 API_KEY producción configurada correctamente"
+          echo "📌 API_KEY configurada: ${env.API_KEY}"
         }
       }
     }
@@ -89,7 +93,7 @@ pipeline {
 
       steps {
         echo "🌐 Ejecutando pruebas REST SOLO LECTURA (GET)..."
-        
+
         sh '''
             . venv/bin/activate
             echo "✅ TEST 1: GET /todos"
