@@ -4,21 +4,30 @@ pipeline {
         AWS_REGION = "us-east-1"
     }
     stages {
-      stage('====>Download configuration<====') {
+      stage('====>Download configuration DEVELOP<====') {
+        when {
+          branch 'develop'
+        }
         steps {
           echo "📥 Descargando configuración de entorno..."
-          if (env.BRANCH_NAME == "develop") {
             sh '''
               curl -o samconfig.toml \
               https://raw.githubusercontent.com/Magd13/todo-list-aws-config/staging/samconfig.toml
             '''
-          }
-          if (env.BRANCH_NAME == "master") {
+          echo "✅ Config descargada:"
+          sh "cat samconfig.toml"
+        }
+      }
+      stage('====>Download configuration MASTER<====') {
+        when {
+          branch 'master'
+        }
+        steps {
+          echo "📥 Descargando configuración de entorno..."
             sh '''
               curl -o samconfig.toml \
               https://raw.githubusercontent.com/Magd13/todo-list-aws-config/production/samconfig.toml
             '''
-          }
           echo "✅ Config descargada:"
           sh "cat samconfig.toml"
         }
