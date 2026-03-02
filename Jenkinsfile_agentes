@@ -22,11 +22,6 @@ pipeline {
             sh 'whoami && hostname'
             echo "EJECUTANDO ANALISIS ESTATICO EN SRC/"
             sh '''
-                python3 -m venv venv
-                . venv/bin/activate
-                pip install --upgrade pip
-                pip install flake8 bandit
-
                 mkdir -p reports
                 
                 echo "RUNNUNG FLAKE8"
@@ -50,8 +45,6 @@ pipeline {
                 script {
                     // Ejecutar SAM deploy
                     sh '''
-                        . venv/bin/activate
-        
                         echo "📦 SAM BUILD..."
                         sam build
         
