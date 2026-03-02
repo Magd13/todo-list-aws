@@ -98,7 +98,7 @@ pipeline {
         sh '''
             . venv/bin/activate
             echo "✅ TEST 1: GET /todos"
-            curl -s -H "x-api-key: ${API_KEY}" ${BASE_URL}/todosssss | grep "\\[" || exit 1
+            curl -s -H "x-api-key: ${API_KEY}" ${BASE_URL}/todos | grep "\\[" || exit 1
             echo "✅ TEST 2: GET /todos/{id}"
             curl -s -H "x-api-key: ${API_KEY}" ${BASE_URL}/todos/1 || exit 1
             echo "🎉 REST TEST READ-ONLY PASSED!"
