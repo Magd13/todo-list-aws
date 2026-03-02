@@ -5,6 +5,14 @@ pipeline {
         STACK_NAME = "todo-api-staging"
     }
     stages {
+        stage('==========>CHECKOUT DEVELOP<===========') {
+            steps {
+                echo "📥 Descargando código de develop..."
+                git branch: 'develop',
+                url: 'https://github.com/Magd13/todo-list-aws.git'
+                echo "✅ Código descargado correctamente"
+            }
+        }
         stage('====>Download configuration<====') {
             steps {
                 echo "📥 Descargando configuración de entorno..."
@@ -21,7 +29,6 @@ pipeline {
                 echo "EJECUTANDO ANALISIS ESTATICO EN SRC/"
                 sh '''
                     mkdir -p reports
-                    . venv/bin/activate
                     
                     echo "RUNNUNG FLAKE8"
                     flake8 src --output-file=reports/flake8-report.txt || true
@@ -44,8 +51,6 @@ pipeline {
                 script {
                     // Ejecutar SAM deploy
                     sh '''
-                        . venv/bin/activate
-        
                         echo "📦 SAM BUILD..."
                         sam build
         
