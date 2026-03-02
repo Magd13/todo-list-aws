@@ -25,22 +25,29 @@ pipeline {
             }
         }
         stage('==========>STATIC TEST<===========') {
-            steps {
-                echo "EJECUTANDO ANALISIS ESTATICO EN SRC/"
-                sh '''
-                    mkdir -p reports
-                    
-                    echo "RUNNUNG FLAKE8"
-                    flake8 src --output-file=reports/flake8-report.txt || true
-                    
-                    echo "RUNNING BANDIT" > reports/bandit.out
-                    bandit -r src -f txt -o reports/bandit-reports.txt || true
-                '''
+           parallel {
+                stage('Flake8') {
+                    steps {
+                        echo "EJECUTANDO FLAKE8"
+                        sh '''
+                            mkdir -p reports
+                            flake8 src --output-file=reports/flake8-report.txt || true
+                        '''
+                    }
+                }
+                stage('Bandit') {
+                    steps {
+                        echo "EJECUTANDO BANDIT"
+                        sh '''
+                            mkdir -p reports
+                            bandit -r src -f txt -o reports/bandit-reports.txt || true
+                        '''
+                    }
+                }
             }
             post {
                 always {
                     echo "📌 Publicando reportes estáticos..."
-
                     archiveArtifacts artifacts: "reports/*.txt", fingerprint: true
                 }
             }
