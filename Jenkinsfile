@@ -16,19 +16,6 @@ pipeline {
                 sh "cat samconfig.toml"
             }
         }
-        stage('=====> CREATE VENV & INSTALL TOOLS <=====') {
-            steps {
-                echo "🐍 Creando entorno virtual e instalando dependencias..."
-
-                sh '''
-                    python3 -m venv venv
-                    . venv/bin/activate
-
-                    pip install --upgrade pip
-                    pip install flake8 bandit aws-sam-cli
-                '''
-            }
-        }
         stage('==========>STATIC TEST<===========') {
             steps {
                 echo "EJECUTANDO ANALISIS ESTATICO EN SRC/"
