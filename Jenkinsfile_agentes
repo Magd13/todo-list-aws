@@ -6,30 +6,22 @@ pipeline {
       STAGE = "staging"
     }
     stages {
-        stage('=====> CREATE VENV & INSTALL TOOLS <=====') {
-          steps {
-            echo "🐍 Creando entorno virtual e instalando dependencias..."
-
-            sh '''
-                python3 -m venv venv
-                . venv/bin/activate
-
-                pip install --upgrade pip
-                pip install flake8 bandit aws-sam-cli
-            '''
-          }
+        stage('==========>CHECKOUT DEVELOP<===========') {
+            steps {
+                sh 'whoami && hostname'
+                echo "📥 Descargando código de develop..."
+                git branch: 'develop',
+                url: 'https://github.com/Magd13/todo-list-aws.git'
+                echo "✅ Código descargado correctamente"
+            }
         }
         stage('==========>STATIC TEST<===========') {
           agent { label 'static-agent' }
 
           steps {
+            sh 'whoami && hostname'
             echo "EJECUTANDO ANALISIS ESTATICO EN SRC/"
             sh '''
-                python3 -m venv venv
-                . venv/bin/activate
-                pip install --upgrade pip
-                pip install flake8 bandit
-
                 mkdir -p reports
                 
                 echo "RUNNUNG FLAKE8"
@@ -48,12 +40,11 @@ pipeline {
         }
         stage('==========>DEPLOY (SAM)<===========') {
             steps {
+                sh 'whoami && hostname'
                 echo "🚀 Construyendo y desplegando con AWS SAM en STAGING..."
                 script {
                     // Ejecutar SAM deploy
                     sh '''
-                        . venv/bin/activate
-        
                         echo "📦 SAM BUILD..."
                         sam build
         
@@ -130,6 +121,7 @@ pipeline {
               API_KEY = "${env.API_KEY}"
           }
           steps {
+            sh 'whoami && hostname'
             echo "🌐 Ejecutando pruebas de integración..."
             
             unstash "api-env"
@@ -153,6 +145,7 @@ pipeline {
         }
         stage('==========>PROMOTE (MERGE MASTER)<===========') {
             steps {
+                sh 'whoami && hostname'
                 echo "🚀 Promoviendo versión a Release..."
                 withCredentials([usernamePassword(credentialsId: 'case1.4', usernameVariable: 'GITHUB_USER', passwordVariable: 'GITHUB_TOKEN')]) {
                   sh '''
