@@ -8,6 +8,7 @@ pipeline {
     stages {
         stage('==========>CHECKOUT DEVELOP<===========') {
             steps {
+                sh 'whoami && hostname'
                 echo "📥 Descargando código de develop..."
                 git branch: 'develop',
                 url: 'https://github.com/Magd13/todo-list-aws.git'
@@ -18,6 +19,7 @@ pipeline {
           agent { label 'static-agent' }
 
           steps {
+            sh 'whoami && hostname'
             echo "EJECUTANDO ANALISIS ESTATICO EN SRC/"
             sh '''
                 python3 -m venv venv
@@ -43,6 +45,7 @@ pipeline {
         }
         stage('==========>DEPLOY (SAM)<===========') {
             steps {
+                sh 'whoami && hostname'
                 echo "🚀 Construyendo y desplegando con AWS SAM en STAGING..."
                 script {
                     // Ejecutar SAM deploy
@@ -125,6 +128,7 @@ pipeline {
               API_KEY = "${env.API_KEY}"
           }
           steps {
+            sh 'whoami && hostname'
             echo "🌐 Ejecutando pruebas de integración..."
             
             unstash "api-env"
@@ -148,6 +152,7 @@ pipeline {
         }
         stage('==========>PROMOTE (MERGE MASTER)<===========') {
             steps {
+                sh 'whoami && hostname'
                 echo "🚀 Promoviendo versión a Release..."
                 withCredentials([usernamePassword(credentialsId: 'case1.4', usernameVariable: 'GITHUB_USER', passwordVariable: 'GITHUB_TOKEN')]) {
                   sh '''
