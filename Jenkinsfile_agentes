@@ -6,18 +6,13 @@ pipeline {
       STAGE = "staging"
     }
     stages {
-        stage('=====> CREATE VENV & INSTALL TOOLS <=====') {
-          steps {
-            echo "🐍 Creando entorno virtual e instalando dependencias..."
-
-            sh '''
-                python3 -m venv venv
-                . venv/bin/activate
-
-                pip install --upgrade pip
-                pip install flake8 bandit aws-sam-cli
-            '''
-          }
+        stage('==========>CHECKOUT DEVELOP<===========') {
+            steps {
+                echo "📥 Descargando código de develop..."
+                git branch: 'develop',
+                url: 'https://github.com/Magd13/todo-list-aws.git'
+                echo "✅ Código descargado correctamente"
+            }
         }
         stage('==========>STATIC TEST<===========') {
           agent { label 'static-agent' }
